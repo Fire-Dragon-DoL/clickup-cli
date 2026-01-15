@@ -1,17 +1,37 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
 
+// StringOrNumber handles JSON fields that can be either string or number
+type StringOrNumber string
+
+func (s *StringOrNumber) UnmarshalJSON(data []byte) error {
+	var str string
+	if err := json.Unmarshal(data, &str); err == nil {
+		*s = StringOrNumber(str)
+		return nil
+	}
+
+	var num json.Number
+	if err := json.Unmarshal(data, &num); err == nil {
+		*s = StringOrNumber(num.String())
+		return nil
+	}
+
+	return fmt.Errorf("cannot unmarshal %s into StringOrNumber", data)
+}
+
 type User struct {
-	ID       string `json:"id"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Color    string `json:"color"`
-	Initials string `json:"initials"`
-	Avatar   string `json:"avatar"`
+	ID       StringOrNumber `json:"id"`
+	Username string         `json:"username"`
+	Email    string         `json:"email"`
+	Color    string         `json:"color"`
+	Initials string         `json:"initials"`
+	Avatar   string         `json:"avatar"`
 }
 
 type Dependency struct {
