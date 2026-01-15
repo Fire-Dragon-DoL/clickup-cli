@@ -208,3 +208,31 @@ func TestFormatTaskDetailsViewWithoutComments(t *testing.T) {
 		t.Error("expected formatted output to be non-empty")
 	}
 }
+
+func TestTasksDeleteCmd(t *testing.T) {
+	cmd := tasksDeleteCmd
+
+	if cmd == nil {
+		t.Fatal("tasksDeleteCmd is nil")
+	}
+	if cmd.Use != "delete <task-id|name|url>" {
+		t.Errorf("expected Use 'delete <task-id|name|url>', got '%s'", cmd.Use)
+	}
+	if cmd.Short == "" {
+		t.Error("expected non-empty Short description")
+	}
+}
+
+func TestTasksArchiveCmd(t *testing.T) {
+	cmd := tasksArchiveCmd
+
+	if cmd == nil {
+		t.Fatal("tasksArchiveCmd is nil")
+	}
+	if cmd.Use != "archive <task-id|name|url>" {
+		t.Errorf("expected Use 'archive <task-id|name|url>', got '%s'", cmd.Use)
+	}
+	if cmd.Short == "" {
+		t.Error("expected non-empty Short description")
+	}
+}

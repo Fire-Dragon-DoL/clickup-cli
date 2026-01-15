@@ -407,4 +407,77 @@ func init() {
 	tasksUpdateCmd.Flags().StringP("description", "d", "", "task description (markdown)")
 	tasksUpdateCmd.Flags().String("due", "", "due date")
 	tasksUpdateCmd.Flags().String("parent", "", "parent task name, ID, or URL")
+
+	tasksCmd.AddCommand(tasksDeleteCmd)
+	tasksCmd.AddCommand(tasksArchiveCmd)
+}
+
+var tasksDeleteCmd = &cobra.Command{
+	Use:   "delete <task-id|name|url>",
+	Short: "Delete a task permanently",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		taskArg := args[0]
+
+		kr := GetKeyring()
+		apiKey, err := kr.GetAPIKey()
+		if err != nil {
+			PrintError(err)
+			return err
+		}
+
+		client := api.NewClient(apiKey, "")
+		cfg := GetConfig()
+		res := resolver.New(client, cfg.StrictResolve)
+
+		taskID, err := res.ResolveTask(taskArg)
+		if err != nil {
+			PrintError(err)
+			return err
+		}
+
+		err = api.DeleteTask(client, taskID)
+		if err != nil {
+			PrintError(err)
+			return err
+		}
+
+		fmt.Fprintf(cmd.OutOrStdout(), "Task %s deleted\n", taskID)
+		return nil
+	},
+}
+
+var tasksArchiveCmd = &cobra.Command{
+	Use:   "archive <task-id|name|url>",
+	Short: "Archive a task",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		taskArg := args[0]
+
+		kr := GetKeyring()
+		apiKey, err := kr.GetAPIKey()
+		if err != nil {
+			PrintError(err)
+			return err
+		}
+
+		client := api.NewClient(apiKey, "")
+		cfg := GetConfig()
+		res := resolver.New(client, cfg.StrictResolve)
+
+		taskID, err := res.ResolveTask(taskArg)
+		if err != nil {
+			PrintError(err)
+			return err
+		}
+
+		err = api.ArchiveTask(client, taskID)
+		if err != nil {
+			PrintError(err)
+			return err
+		}
+
+		fmt.Fprintf(cmd.OutOrStdout(), "Task %s archived\n", taskID)
+		return nil
+	},
 }

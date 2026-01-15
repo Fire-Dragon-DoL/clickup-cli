@@ -223,6 +223,38 @@ When a name matches multiple resources:
 - `strict_resolve: false` (default): Uses first match
 - `strict_resolve: true`: Fails with error listing matches
 
+## Integration Tests
+
+Integration tests verify the CLI against a real ClickUp workspace.
+
+### Prerequisites
+
+1. Set up your API key in the system keyring (see API Key Setup above)
+2. Set the `CLICKUP_SPACE_ID` environment variable:
+   ```bash
+   export CLICKUP_SPACE_ID="your_space_id"
+   ```
+
+### Running Tests
+
+Run all integration tests:
+
+```bash
+./scripts/run-all.sh
+```
+
+Run individual tests:
+
+```bash
+./scripts/test-setup.sh      # Verify API key and configuration
+./scripts/test-folders.sh    # Test folder operations
+./scripts/test-lists.sh      # Test list operations
+./scripts/test-tasks-list.sh # Test task listing
+./scripts/test-task-crud.sh  # Test create/show/update/delete
+```
+
+**Note:** The CRUD test creates a temporary task and cleans it up after completion.
+
 ## License
 
 MIT
