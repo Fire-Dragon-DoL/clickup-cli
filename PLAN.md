@@ -134,7 +134,7 @@ Phases 3-9 can be executed in parallel by subagents. Rules:
 
 ### Sequential
 - [x] Phase 0: Project Foundation
-- [ ] Phase 1: API Client
+- [x] Phase 1: API Client
 - [ ] Phase 2: Resolver
 
 ### Parallel (run after Phase 2 completes)
@@ -197,6 +197,7 @@ Phases 3-9 can be executed in parallel by subagents. Rules:
 3. Authentication: inject `Authorization` header on all requests
 4. Error handling: parse ClickUp API error responses
 5. Base URL configurable (default: `https://api.clickup.com/api/v2`)
+6. Implement `internal/api/client_mock.go` with `MockClient` for testing (implements `resolver.Searcher` interface)
 
 ### README
 - N/A (internal infrastructure)
