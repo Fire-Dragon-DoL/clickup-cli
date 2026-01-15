@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/Fire-Dragon-DoL/clickup-cli/internal/resolver"
 )
@@ -101,8 +102,39 @@ func (c *Client) SearchTasks(query string) ([]resolver.SearchResult, error) {
 }
 
 // SearchLists implements resolver.Searcher
+// Query format: "FolderName/ListName"
 func (c *Client) SearchLists(query string) ([]resolver.SearchResult, error) {
-	return nil, fmt.Errorf("search not implemented")
+	parts := strings.SplitN(query, "/", 2)
+	if len(parts) != 2 {
+		return nil, fmt.Errorf("list query must be in format 'Folder/List', got %q", query)
+	}
+	folderName := parts[0]
+	listName := parts[1]
+
+	folderResults, err := c.SearchFolders(folderName)
+	if err != nil {
+		return nil, err
+	}
+	if len(folderResults) == 0 {
+		return nil, fmt.Errorf("folder %q not found", folderName)
+	}
+	folderID := folderResults[0].ID
+
+	lists, err := GetLists(c, folderID)
+	if err != nil {
+		return nil, err
+	}
+
+	var results []resolver.SearchResult
+	for _, l := range lists {
+		if l.Name == listName {
+			results = append(results, resolver.SearchResult{
+				ID:   l.ID,
+				Name: l.Name,
+			})
+		}
+	}
+	return results, nil
 }
 
 // SearchFolders implements resolver.Searcher
