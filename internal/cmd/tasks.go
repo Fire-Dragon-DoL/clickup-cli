@@ -47,7 +47,8 @@ var tasksListCmd = &cobra.Command{
 			return err
 		}
 
-		formatted, err := formatTasksListView(resp.Tasks)
+		formatter := GetFormatter()
+		formatted, err := formatter.FormatTaskList(resp.Tasks, recursive)
 		if err != nil {
 			return err
 		}
@@ -142,42 +143,6 @@ var tasksCreateCmd = &cobra.Command{
 		fmt.Println(formatted)
 		return nil
 	},
-}
-
-func formatTasksListView(tasks []api.Task) (string, error) {
-	formatter := GetFormatter()
-
-	type TaskListView struct {
-		ID       string
-		Title    string
-		Assignee string
-		Status   string
-		Priority string
-	}
-
-	var views []TaskListView
-	for _, task := range tasks {
-		view := TaskListView{
-			ID:    task.ID,
-			Title: task.Name,
-		}
-
-		if task.Assignee != nil {
-			view.Assignee = task.Assignee.Username
-		}
-
-		if task.Status != nil {
-			view.Status = task.Status.Status
-		}
-
-		if task.Priority != nil {
-			view.Priority = task.Priority.Priority
-		}
-
-		views = append(views, view)
-	}
-
-	return formatter.Format(views)
 }
 
 func formatTaskDetailsView(task api.Task, comments ...api.Comment) (string, error) {

@@ -376,21 +376,12 @@ func TestGetTaskCommentsEmpty(t *testing.T) {
 func TestGetTasksWithSubtasksRecursive(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
+		// ClickUp API returns tasks flat with parent field set
 		w.Write([]byte(`{
 			"tasks": [
-				{
-					"id": "parent1",
-					"name": "Parent Task",
-					"subtasks": [
-						{
-							"id": "child1",
-							"name": "Child Task",
-							"subtasks": [
-								{"id": "grandchild1", "name": "Grandchild Task"}
-							]
-						}
-					]
-				}
+				{"id": "parent1", "name": "Parent Task"},
+				{"id": "child1", "name": "Child Task", "parent": "parent1"},
+				{"id": "grandchild1", "name": "Grandchild Task", "parent": "child1"}
 			]
 		}`))
 	}))
@@ -403,9 +394,12 @@ func TestGetTasksWithSubtasksRecursive(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if len(result.Tasks) != 1 {
-		t.Errorf("expected 1 task, got %d", len(result.Tasks))
+		t.Errorf("expected 1 root task, got %d", len(result.Tasks))
 	}
 	parent := result.Tasks[0]
+	if parent.ID != "parent1" {
+		t.Errorf("expected parent ID 'parent1', got '%s'", parent.ID)
+	}
 	if len(parent.Subtasks) != 1 {
 		t.Errorf("expected 1 child task, got %d", len(parent.Subtasks))
 	}
@@ -422,21 +416,13 @@ func TestGetTasksWithSubtasksRecursive(t *testing.T) {
 func TestGetTasksWithMultipleRootsAndChildren(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
+		// ClickUp API returns tasks flat with parent field set
 		w.Write([]byte(`{
 			"tasks": [
-				{
-					"id": "root1",
-					"name": "Root 1",
-					"subtasks": [
-						{"id": "child1.1", "name": "Child 1.1"},
-						{"id": "child1.2", "name": "Child 1.2"}
-					]
-				},
-				{
-					"id": "root2",
-					"name": "Root 2",
-					"subtasks": []
-				}
+				{"id": "root1", "name": "Root 1"},
+				{"id": "root2", "name": "Root 2"},
+				{"id": "child1.1", "name": "Child 1.1", "parent": "root1"},
+				{"id": "child1.2", "name": "Child 1.2", "parent": "root1"}
 			]
 		}`))
 	}))

@@ -86,10 +86,9 @@ func TestFormatTasksListView(t *testing.T) {
 		},
 	}
 
-	cfg = &config.Config{OutputFormat: "text"}
 	formatter = output.NewFormatter("text")
 
-	formatted, err := formatTasksListView(tasks)
+	formatted, err := formatter.FormatTaskList(tasks, false)
 
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -110,10 +109,9 @@ func TestFormatTasksListViewWithNilFields(t *testing.T) {
 		},
 	}
 
-	cfg = &config.Config{OutputFormat: "text"}
 	formatter = output.NewFormatter("text")
 
-	formatted, err := formatTasksListView(tasks)
+	formatted, err := formatter.FormatTaskList(tasks, false)
 
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)

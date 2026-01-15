@@ -97,7 +97,55 @@ func GetTasks(c *Client, listID string, recursive bool) (TaskListResponse, error
 	if recursive {
 		path += "&subtasks=true"
 	}
-	return Do[any, TaskListResponse](c, http.MethodGet, path, nil)
+	resp, err := Do[any, TaskListResponse](c, http.MethodGet, path, nil)
+	if err != nil {
+		return resp, err
+	}
+	if recursive {
+		resp.Tasks = buildTaskTree(resp.Tasks)
+	}
+	return resp, nil
+}
+
+// buildTaskTree converts a flat list of tasks into a tree structure
+// by nesting subtasks under their parents based on ParentID
+func buildTaskTree(tasks []Task) []Task {
+	taskMap := make(map[string]*Task)
+	for i := range tasks {
+		task := tasks[i]
+		task.Subtasks = []Task{}
+		taskMap[task.ID] = &task
+	}
+
+	var rootIDs []string
+	for _, task := range tasks {
+		if task.ParentID == "" {
+			rootIDs = append(rootIDs, task.ID)
+		} else if parent, ok := taskMap[task.ParentID]; ok {
+			child := taskMap[task.ID]
+			parent.Subtasks = append(parent.Subtasks, *child)
+		} else {
+			rootIDs = append(rootIDs, task.ID)
+		}
+	}
+
+	// Rebuild tree recursively to get nested subtasks
+	var buildTree func(id string) Task
+	buildTree = func(id string) Task {
+		task := *taskMap[id]
+		task.Subtasks = []Task{}
+		for _, child := range taskMap[id].Subtasks {
+			task.Subtasks = append(task.Subtasks, buildTree(child.ID))
+		}
+		return task
+	}
+
+	var roots []Task
+	for _, id := range rootIDs {
+		roots = append(roots, buildTree(id))
+	}
+
+	return roots
 }
 
 func GetTask(c *Client, taskID string) (Task, error) {

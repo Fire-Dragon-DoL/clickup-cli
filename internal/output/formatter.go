@@ -80,16 +80,52 @@ func (f *Formatter) formatStruct(v reflect.Value) (string, error) {
 	return strings.Join(parts, " | "), nil
 }
 
+type TaskListView struct {
+	ID       string         `json:"id"`
+	Title    string         `json:"title"`
+	Assignee string         `json:"assignee,omitempty"`
+	Status   string         `json:"status,omitempty"`
+	Priority string         `json:"priority,omitempty"`
+	Subtasks []TaskListView `json:"subtasks"`
+}
+
+func taskToListView(task api.Task, recursive bool) TaskListView {
+	view := TaskListView{
+		ID:       task.ID,
+		Title:    task.Name,
+		Subtasks: []TaskListView{},
+	}
+	if task.Assignee != nil {
+		view.Assignee = task.Assignee.Username
+	}
+	if task.Status != nil {
+		view.Status = task.Status.Status
+	}
+	if task.Priority != nil {
+		view.Priority = task.Priority.Priority
+	}
+	if recursive && len(task.Subtasks) > 0 {
+		for _, sub := range task.Subtasks {
+			view.Subtasks = append(view.Subtasks, taskToListView(sub, recursive))
+		}
+	}
+	return view
+}
+
 func (f *Formatter) FormatTaskList(tasks []api.Task, recursive bool) (string, error) {
+	var views []TaskListView
+	for _, task := range tasks {
+		views = append(views, taskToListView(task, recursive))
+	}
+
 	if f.format == "json" {
-		b, err := json.MarshalIndent(tasks, "", "  ")
+		b, err := json.MarshalIndent(views, "", "  ")
 		if err != nil {
 			return "", err
 		}
 		return string(b), nil
 	}
-	result, err := f.formatTaskListText(tasks, recursive)
-	return result, err
+	return f.formatTaskListText(tasks, recursive)
 }
 
 func (f *Formatter) formatTaskListText(tasks []api.Task, recursive bool) (string, error) {
