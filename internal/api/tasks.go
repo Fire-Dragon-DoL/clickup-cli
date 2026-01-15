@@ -64,10 +64,13 @@ type Task struct {
 		Color    string `json:"color"`
 		OrderBy  int    `json:"orderby"`
 	} `json:"priority"`
-	Assignee *User   `json:"assignee"`
+	Assignee  *User  `json:"assignee"`
 	Assignees []User `json:"assignees"`
-	ParentID string `json:"parent"`
-	ListID   string `json:"list"`
+	ParentID  string `json:"parent"`
+	List      *struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	} `json:"list"`
 	Subtasks []Task `json:"subtasks"`
 }
 

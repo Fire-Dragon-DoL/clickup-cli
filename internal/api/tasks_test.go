@@ -92,7 +92,7 @@ func TestCreateTask(t *testing.T) {
 		w.Write([]byte(`{
 			"id": "task-123",
 			"name": "New Task",
-			"list": "list-456"
+			"list": {"id": "list-456", "name": "My List"}
 		}`))
 	}))
 	defer server.Close()
@@ -113,8 +113,8 @@ func TestCreateTask(t *testing.T) {
 	if result.Name != "New Task" {
 		t.Errorf("expected Name 'New Task', got '%s'", result.Name)
 	}
-	if result.ListID != "list-456" {
-		t.Errorf("expected ListID 'list-456', got '%s'", result.ListID)
+	if result.List == nil || result.List.ID != "list-456" {
+		t.Errorf("expected List.ID 'list-456', got '%v'", result.List)
 	}
 }
 
@@ -125,7 +125,7 @@ func TestCreateTaskCallsCorrectPath(t *testing.T) {
 		capturedPath = r.RequestURI
 		capturedMethod = r.Method
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"id": "task-123", "name": "New Task", "list": "list-456"}`))
+		w.Write([]byte(`{"id": "task-123", "name": "New Task", "list": {"id": "list-456"}}`))
 	}))
 	defer server.Close()
 	client := NewClient("key", server.URL, "")
@@ -150,7 +150,7 @@ func TestCreateTaskWithOptionalFields(t *testing.T) {
 		w.Write([]byte(`{
 			"id": "task-123",
 			"name": "New Task with Details",
-			"list": "list-456",
+			"list": {"id": "list-456"},
 			"description": "Test description",
 			"parent": "parent-789"
 		}`))
@@ -202,7 +202,7 @@ func TestCreateTaskMissingListID(t *testing.T) {
 func TestCreateTaskMissingNameField(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"id": "task-123", "name": "", "list": "list-456"}`))
+		w.Write([]byte(`{"id": "task-123", "name": "", "list": {"id": "list-456"}}`))
 	}))
 	defer server.Close()
 	client := NewClient("key", server.URL, "")
