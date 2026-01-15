@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/Fire-Dragon-DoL/clickup-cli/internal/resolver"
 )
 
 const DefaultBaseURL = "https://api.clickup.com/api/v2"
@@ -89,4 +91,24 @@ type Error struct {
 
 func (e *Error) Error() string {
 	return fmt.Sprintf("clickup api error (%d): %s [%s]", e.StatusCode, e.Message, e.Code)
+}
+
+// SearchTasks implements resolver.Searcher
+func (c *Client) SearchTasks(query string) ([]resolver.SearchResult, error) {
+	return nil, fmt.Errorf("search not implemented")
+}
+
+// SearchLists implements resolver.Searcher
+func (c *Client) SearchLists(query string) ([]resolver.SearchResult, error) {
+	return nil, fmt.Errorf("search not implemented")
+}
+
+// SearchFolders implements resolver.Searcher
+func (c *Client) SearchFolders(query string) ([]resolver.SearchResult, error) {
+	return nil, fmt.Errorf("search not implemented")
+}
+
+// SearchUsers implements resolver.Searcher
+func (c *Client) SearchUsers(query string) ([]resolver.SearchResult, error) {
+	return nil, fmt.Errorf("search not implemented")
 }
