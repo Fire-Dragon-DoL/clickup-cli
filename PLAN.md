@@ -138,16 +138,16 @@ Phases 3-9 can be executed in parallel by subagents. Rules:
 - [x] Phase 2: Resolver
 
 ### Parallel (run after Phase 2 completes)
-- [ ] Phase 3: List Folders & Lists
-- [ ] Phase 4: List Tasks (Top-Level) - List View
-- [ ] Phase 5: List Tasks (Recursive) - List View
-- [ ] Phase 6: Task Details - Details View
-- [ ] Phase 7: Create Task - Details View
-- [ ] Phase 8: Update Task - Details View
-- [ ] Phase 9: Delete & Archive Task
+- [x] Phase 3: List Folders & Lists
+- [x] Phase 4: List Tasks (Top-Level) - List View
+- [x] Phase 5: List Tasks (Recursive) - List View
+- [x] Phase 6: Task Details - Details View
+- [x] Phase 7: Create Task - Details View
+- [x] Phase 8: Update Task - Details View
+- [x] Phase 9: Delete & Archive Task
 
 ### Sequential (run after Phases 3-9 complete)
-- [ ] Phase 10: Documentation Consolidation
+- [x] Phase 10: Documentation Consolidation
 - [ ] Phase 11: Integration Test Scripts
 
 ---
