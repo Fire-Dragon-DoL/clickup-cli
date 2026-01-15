@@ -87,7 +87,3 @@ func PrintOutput(data any) error {
 	fmt.Println(out)
 	return nil
 }
-
-func PrintError(err error) {
-	fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-}

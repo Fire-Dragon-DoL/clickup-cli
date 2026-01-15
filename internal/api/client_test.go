@@ -8,7 +8,7 @@ import (
 )
 
 func TestNewClient(t *testing.T) {
-	client := NewClient("test-api-key", "")
+	client := NewClient("test-api-key", "", "")
 
 	if client.apiKey != "test-api-key" {
 		t.Errorf("expected apiKey 'test-api-key', got '%s'", client.apiKey)
@@ -21,7 +21,7 @@ func TestNewClient(t *testing.T) {
 func TestNewClientCustomBaseURL(t *testing.T) {
 	customURL := "https://custom.clickup.com/api/v2"
 
-	client := NewClient("test-api-key", customURL)
+	client := NewClient("test-api-key", customURL, "")
 
 	if client.baseURL != customURL {
 		t.Errorf("expected baseURL '%s', got '%s'", customURL, client.baseURL)
@@ -36,7 +36,7 @@ func TestDoInjectsAuthHeader(t *testing.T) {
 		json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 	}))
 	defer server.Close()
-	client := NewClient("my-secret-key", server.URL)
+	client := NewClient("my-secret-key", server.URL, "")
 
 	_, err := Do[any, map[string]string](client, http.MethodGet, "/test", nil)
 
@@ -59,7 +59,7 @@ func TestDoSendsRequestBody(t *testing.T) {
 		json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	_, err := Do[RequestBody, map[string]string](client, http.MethodPost, "/test", &RequestBody{Name: "test-name"})
 
@@ -81,7 +81,7 @@ func TestDoReturnsResponse(t *testing.T) {
 		json.NewEncoder(w).Encode(Response{ID: "123", Name: "Test Task"})
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	result, err := Do[any, Response](client, http.MethodGet, "/task/123", nil)
 
@@ -105,7 +105,7 @@ func TestDoReturnsErrorOnHTTPError(t *testing.T) {
 		})
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	_, err := Do[any, map[string]string](client, http.MethodGet, "/test", nil)
 
@@ -136,7 +136,7 @@ func TestDoReturnsErrorOnUnauthorized(t *testing.T) {
 		})
 	}))
 	defer server.Close()
-	client := NewClient("bad-key", server.URL)
+	client := NewClient("bad-key", server.URL, "")
 
 	_, err := Do[any, map[string]string](client, http.MethodGet, "/test", nil)
 
@@ -161,7 +161,7 @@ func TestDoReturnsErrorOnNotFound(t *testing.T) {
 		})
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	_, err := Do[any, map[string]string](client, http.MethodGet, "/task/notfound", nil)
 
@@ -178,7 +178,7 @@ func TestDoReturnsErrorOnNotFound(t *testing.T) {
 }
 
 func TestDoHandlesNetworkError(t *testing.T) {
-	client := NewClient("key", "http://localhost:1")
+	client := NewClient("key", "http://localhost:1", "")
 
 	_, err := Do[any, map[string]string](client, http.MethodGet, "/test", nil)
 
@@ -195,7 +195,7 @@ func TestDoSetsContentTypeHeader(t *testing.T) {
 		json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	_, err := Do[map[string]string, map[string]string](client, http.MethodPost, "/test", &map[string]string{"key": "value"})
 

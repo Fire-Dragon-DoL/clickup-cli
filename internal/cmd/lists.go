@@ -19,30 +19,26 @@ var listsListCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		folderArg, err := cmd.Flags().GetString("folder")
 		if folderArg == "" {
-			PrintError(fmt.Errorf("--folder flag is required"))
 			return fmt.Errorf("--folder flag is required")
 		}
 
 		kr := GetKeyring()
 		apiKey, err := kr.GetAPIKey()
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
-		client := api.NewClient(apiKey, "")
 		cfg := GetConfig()
+		client := api.NewClient(apiKey, cfg.BaseURL, cfg.SpaceID)
 		res := resolver.New(client, cfg.StrictResolve)
 
 		folderID, err := res.ResolveFolder(folderArg)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
 		lists, err := api.GetLists(client, folderID)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 

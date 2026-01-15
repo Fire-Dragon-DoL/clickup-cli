@@ -18,7 +18,7 @@ func TestUpdateTask(t *testing.T) {
 		}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	payload := map[string]any{
 		"name":     "Updated Task",
@@ -50,7 +50,7 @@ func TestUpdateTaskPartialUpdate(t *testing.T) {
 		}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	payload := map[string]any{
 		"status": "completed",
@@ -72,7 +72,7 @@ func TestUpdateTaskNotFound(t *testing.T) {
 		w.Write([]byte(`{"err": "Task not found", "ECODE": "ITEM_015"}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	payload := map[string]any{"name": "Updated"}
 
@@ -99,7 +99,7 @@ func TestUpdateTaskAllFields(t *testing.T) {
 		}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	payload := map[string]any{
 		"name":        "Complete Update",
@@ -130,7 +130,7 @@ func TestUpdateTaskBuildsCorrectPath(t *testing.T) {
 		w.Write([]byte(`{"id": "task123", "name": "Updated"}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	payload := map[string]any{"name": "Updated"}
 	UpdateTask(client, "task123", payload)

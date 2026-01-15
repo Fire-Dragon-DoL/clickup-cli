@@ -26,7 +26,7 @@ func TestGetFolders(t *testing.T) {
 	}))
 	defer server.Close()
 
-	client := NewClient("test-key", server.URL)
+	client := NewClient("test-key", server.URL, "")
 
 	arrange := struct {
 		spaceID string
@@ -64,7 +64,7 @@ func TestGetFoldersEmpty(t *testing.T) {
 	}))
 	defer server.Close()
 
-	client := NewClient("test-key", server.URL)
+	client := NewClient("test-key", server.URL, "")
 
 	result, err := GetFolders(client, "123")
 
@@ -86,7 +86,7 @@ func TestGetFoldersError(t *testing.T) {
 	}))
 	defer server.Close()
 
-	client := NewClient("bad-key", server.URL)
+	client := NewClient("bad-key", server.URL, "")
 
 	_, err := GetFolders(client, "123")
 

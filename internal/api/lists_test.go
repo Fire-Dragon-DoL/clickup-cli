@@ -26,7 +26,7 @@ func TestGetLists(t *testing.T) {
 	}))
 	defer server.Close()
 
-	client := NewClient("test-key", server.URL)
+	client := NewClient("test-key", server.URL, "")
 
 	arrange := struct {
 		folderID string
@@ -64,7 +64,7 @@ func TestGetListsEmpty(t *testing.T) {
 	}))
 	defer server.Close()
 
-	client := NewClient("test-key", server.URL)
+	client := NewClient("test-key", server.URL, "")
 
 	result, err := GetLists(client, "456")
 
@@ -86,7 +86,7 @@ func TestGetListsError(t *testing.T) {
 	}))
 	defer server.Close()
 
-	client := NewClient("test-key", server.URL)
+	client := NewClient("test-key", server.URL, "")
 
 	_, err := GetLists(client, "notfound")
 

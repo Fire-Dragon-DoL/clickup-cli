@@ -14,16 +14,18 @@ const DefaultBaseURL = "https://api.clickup.com/api/v2"
 type Client struct {
 	apiKey     string
 	baseURL    string
+	spaceID    string
 	httpClient *http.Client
 }
 
-func NewClient(apiKey, baseURL string) *Client {
+func NewClient(apiKey, baseURL, spaceID string) *Client {
 	if baseURL == "" {
 		baseURL = DefaultBaseURL
 	}
 	return &Client{
 		apiKey:     apiKey,
 		baseURL:    baseURL,
+		spaceID:    spaceID,
 		httpClient: &http.Client{},
 	}
 }
@@ -105,7 +107,25 @@ func (c *Client) SearchLists(query string) ([]resolver.SearchResult, error) {
 
 // SearchFolders implements resolver.Searcher
 func (c *Client) SearchFolders(query string) ([]resolver.SearchResult, error) {
-	return nil, fmt.Errorf("search not implemented")
+	if c.spaceID == "" {
+		return nil, fmt.Errorf("space ID is required to search folders")
+	}
+
+	folders, err := GetFolders(c, c.spaceID)
+	if err != nil {
+		return nil, err
+	}
+
+	var results []resolver.SearchResult
+	for _, f := range folders {
+		if f.Name == query {
+			results = append(results, resolver.SearchResult{
+				ID:   f.ID,
+				Name: f.Name,
+			})
+		}
+	}
+	return results, nil
 }
 
 // SearchUsers implements resolver.Searcher

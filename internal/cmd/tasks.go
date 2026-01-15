@@ -19,42 +19,36 @@ var tasksListCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		listArg, err := cmd.Flags().GetString("list")
 		if listArg == "" {
-			PrintError(fmt.Errorf("--list flag is required"))
 			return fmt.Errorf("--list flag is required")
 		}
 
 		recursive, err := cmd.Flags().GetBool("recursive")
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
 		kr := GetKeyring()
 		apiKey, err := kr.GetAPIKey()
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
-		client := api.NewClient(apiKey, "")
 		cfg := GetConfig()
+		client := api.NewClient(apiKey, cfg.BaseURL, cfg.SpaceID)
 		res := resolver.New(client, cfg.StrictResolve)
 
 		listID, err := res.ResolveList(listArg)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
 		resp, err := api.GetTasks(client, listID, recursive)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
 		formatted, err := formatTasksListView(resp.Tasks)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
@@ -69,30 +63,26 @@ var tasksCreateCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		title, err := cmd.Flags().GetString("title")
 		if title == "" {
-			PrintError(fmt.Errorf("--title flag is required"))
 			return fmt.Errorf("--title flag is required")
 		}
 
 		listArg, err := cmd.Flags().GetString("list")
 		if listArg == "" {
-			PrintError(fmt.Errorf("--list flag is required"))
 			return fmt.Errorf("--list flag is required")
 		}
 
 		kr := GetKeyring()
 		apiKey, err := kr.GetAPIKey()
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
-		client := api.NewClient(apiKey, "")
 		cfg := GetConfig()
+		client := api.NewClient(apiKey, cfg.BaseURL, cfg.SpaceID)
 		res := resolver.New(client, cfg.StrictResolve)
 
 		listID, err := res.ResolveList(listArg)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
@@ -125,7 +115,6 @@ var tasksCreateCmd = &cobra.Command{
 		if assignee != "" {
 			assigneeID, err := res.ResolveUser(assignee)
 			if err != nil {
-				PrintError(err)
 				return err
 			}
 			payload["assignee"] = assigneeID
@@ -135,7 +124,6 @@ var tasksCreateCmd = &cobra.Command{
 		if parent != "" {
 			parentID, err := res.ResolveTask(parent)
 			if err != nil {
-				PrintError(err)
 				return err
 			}
 			payload["parent"] = parentID
@@ -143,13 +131,11 @@ var tasksCreateCmd = &cobra.Command{
 
 		task, err := api.CreateTask(client, payload)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
 		formatted, err := formatTaskDetailsView(task)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
@@ -256,35 +242,30 @@ var tasksShowCmd = &cobra.Command{
 		kr := GetKeyring()
 		apiKey, err := kr.GetAPIKey()
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
-		client := api.NewClient(apiKey, "")
 		cfg := GetConfig()
+		client := api.NewClient(apiKey, cfg.BaseURL, cfg.SpaceID)
 		res := resolver.New(client, cfg.StrictResolve)
 
 		taskID, err := res.ResolveTask(taskArg)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
 		task, err := api.GetTask(client, taskID)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
 		comments, err := api.GetTaskComments(client, task.ID)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
 		formatted, err := formatTaskDetailsView(task, comments...)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
@@ -303,17 +284,15 @@ var tasksUpdateCmd = &cobra.Command{
 		kr := GetKeyring()
 		apiKey, err := kr.GetAPIKey()
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
-		client := api.NewClient(apiKey, "")
 		cfg := GetConfig()
+		client := api.NewClient(apiKey, cfg.BaseURL, cfg.SpaceID)
 		res := resolver.New(client, cfg.StrictResolve)
 
 		taskID, err := res.ResolveTask(taskArg)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
@@ -329,8 +308,7 @@ var tasksUpdateCmd = &cobra.Command{
 		if assignee != "" {
 			assigneeID, err := res.ResolveUser(assignee)
 			if err != nil {
-				PrintError(fmt.Errorf("failed to resolve assignee: %w", err))
-				return err
+				return fmt.Errorf("failed to resolve assignee: %w", err)
 			}
 			payload["assignee"] = assigneeID
 		}
@@ -359,8 +337,7 @@ var tasksUpdateCmd = &cobra.Command{
 		if parent != "" {
 			parentID, err := res.ResolveTask(parent)
 			if err != nil {
-				PrintError(fmt.Errorf("failed to resolve parent task: %w", err))
-				return err
+				return fmt.Errorf("failed to resolve parent task: %w", err)
 			}
 			payload["parent"] = parentID
 		}
@@ -368,14 +345,12 @@ var tasksUpdateCmd = &cobra.Command{
 		// Perform update
 		updated, err := api.UpdateTask(client, taskID, payload)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
 		// Format as Details View
 		formatted, err := formatTaskDetailsView(updated)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
@@ -422,23 +397,20 @@ var tasksDeleteCmd = &cobra.Command{
 		kr := GetKeyring()
 		apiKey, err := kr.GetAPIKey()
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
-		client := api.NewClient(apiKey, "")
 		cfg := GetConfig()
+		client := api.NewClient(apiKey, cfg.BaseURL, cfg.SpaceID)
 		res := resolver.New(client, cfg.StrictResolve)
 
 		taskID, err := res.ResolveTask(taskArg)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
 		err = api.DeleteTask(client, taskID)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
@@ -457,23 +429,20 @@ var tasksArchiveCmd = &cobra.Command{
 		kr := GetKeyring()
 		apiKey, err := kr.GetAPIKey()
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
-		client := api.NewClient(apiKey, "")
 		cfg := GetConfig()
+		client := api.NewClient(apiKey, cfg.BaseURL, cfg.SpaceID)
 		res := resolver.New(client, cfg.StrictResolve)
 
 		taskID, err := res.ResolveTask(taskArg)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
 		err = api.ArchiveTask(client, taskID)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 

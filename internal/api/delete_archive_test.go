@@ -18,7 +18,7 @@ func TestDeleteTaskSuccess(t *testing.T) {
 		w.Write([]byte(`{}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	err := DeleteTask(client, "abc123")
 
@@ -33,7 +33,7 @@ func TestDeleteTaskNotFound(t *testing.T) {
 		w.Write([]byte(`{"err": "Task not found", "ECODE": "ITEM_015"}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	err := DeleteTask(client, "notfound")
 
@@ -64,7 +64,7 @@ func TestArchiveTaskSuccess(t *testing.T) {
 		w.Write([]byte(`{}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	err := ArchiveTask(client, "abc123")
 
@@ -79,7 +79,7 @@ func TestArchiveTaskNotFound(t *testing.T) {
 		w.Write([]byte(`{"err": "Task not found", "ECODE": "ITEM_015"}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	err := ArchiveTask(client, "notfound")
 

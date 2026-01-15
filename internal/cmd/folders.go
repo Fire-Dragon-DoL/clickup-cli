@@ -18,21 +18,18 @@ var foldersListCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfg := GetConfig()
 		if cfg.SpaceID == "" {
-			PrintError(fmt.Errorf("space ID not configured"))
 			return fmt.Errorf("space ID is required")
 		}
 
 		kr := GetKeyring()
 		apiKey, err := kr.GetAPIKey()
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 
-		client := api.NewClient(apiKey, "")
+		client := api.NewClient(apiKey, cfg.BaseURL, cfg.SpaceID)
 		folders, err := api.GetFolders(client, cfg.SpaceID)
 		if err != nil {
-			PrintError(err)
 			return err
 		}
 

@@ -18,7 +18,7 @@ func TestGetTasks(t *testing.T) {
 		}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	result, err := GetTasks(client, "list123", false)
 
@@ -44,7 +44,7 @@ func TestGetTasksBuildsCorrectPath(t *testing.T) {
 		w.Write([]byte(`{"tasks": []}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	GetTasks(client, "list123", false)
 
@@ -62,7 +62,7 @@ func TestGetTasksWithRecursiveFlag(t *testing.T) {
 		w.Write([]byte(`{"tasks": []}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	GetTasks(client, "list456", true)
 
@@ -77,7 +77,7 @@ func TestGetTasksError(t *testing.T) {
 		w.Write([]byte(`{"err": "List not found", "ECODE": "LIST_001"}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	_, err := GetTasks(client, "invalid", false)
 
@@ -96,7 +96,7 @@ func TestCreateTask(t *testing.T) {
 		}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	payload := map[string]any{
 		"name":    "New Task",
@@ -128,7 +128,7 @@ func TestCreateTaskCallsCorrectPath(t *testing.T) {
 		w.Write([]byte(`{"id": "task-123", "name": "New Task", "list": "list-456"}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	payload := map[string]any{
 		"name":    "New Task",
@@ -156,7 +156,7 @@ func TestCreateTaskWithOptionalFields(t *testing.T) {
 		}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	payload := map[string]any{
 		"name":        "New Task with Details",
@@ -184,7 +184,7 @@ func TestCreateTaskWithOptionalFields(t *testing.T) {
 }
 
 func TestCreateTaskMissingListID(t *testing.T) {
-	client := NewClient("key", "http://localhost")
+	client := NewClient("key", "http://localhost", "")
 
 	payload := map[string]any{
 		"name": "Task without list",
@@ -205,7 +205,7 @@ func TestCreateTaskMissingNameField(t *testing.T) {
 		w.Write([]byte(`{"id": "task-123", "name": "", "list": "list-456"}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	payload := map[string]any{
 		"list_id": "list-456",
@@ -253,7 +253,7 @@ func TestGetTask(t *testing.T) {
 		json.NewEncoder(w).Encode(task)
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	result, err := GetTask(client, "task123")
 
@@ -283,7 +283,7 @@ func TestGetTaskNotFound(t *testing.T) {
 		})
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	_, err := GetTask(client, "notfound")
 
@@ -330,7 +330,7 @@ func TestGetTaskComments(t *testing.T) {
 		json.NewEncoder(w).Encode(commentsResp)
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	comments, err := GetTaskComments(client, "task123")
 
@@ -361,7 +361,7 @@ func TestGetTaskCommentsEmpty(t *testing.T) {
 		json.NewEncoder(w).Encode(commentsResp)
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	comments, err := GetTaskComments(client, "task123")
 
@@ -395,7 +395,7 @@ func TestGetTasksWithSubtasksRecursive(t *testing.T) {
 		}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	result, err := GetTasks(client, "list123", true)
 
@@ -441,7 +441,7 @@ func TestGetTasksWithMultipleRootsAndChildren(t *testing.T) {
 		}`))
 	}))
 	defer server.Close()
-	client := NewClient("key", server.URL)
+	client := NewClient("key", server.URL, "")
 
 	result, err := GetTasks(client, "list123", true)
 

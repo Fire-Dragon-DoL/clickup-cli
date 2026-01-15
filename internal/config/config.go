@@ -8,15 +8,18 @@ type Config struct {
 	SpaceID       string `mapstructure:"space_id"`
 	OutputFormat  string `mapstructure:"output_format"`
 	StrictResolve bool   `mapstructure:"strict_resolve"`
+	BaseURL       string `mapstructure:"base_url"`
 }
 
 func newViper() *viper.Viper {
 	v := viper.New()
 	v.SetDefault("output_format", "text")
+	v.SetDefault("base_url", "https://api.clickup.com/api/v2")
 
 	v.BindEnv("space_id", "CLICKUP_SPACE_ID")
 	v.BindEnv("output_format", "CLICKUP_OUTPUT_FORMAT")
 	v.BindEnv("strict_resolve", "CLICKUP_STRICT_RESOLVE")
+	v.BindEnv("base_url", "CLICKUP_BASE_URL")
 
 	return v
 }
