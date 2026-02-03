@@ -235,12 +235,12 @@ func TestGetTask(t *testing.T) {
 			Color:  "#FF0000",
 		},
 		Priority: &struct {
-			ID       int    `json:"id"`
+			ID       string `json:"id"`
 			Priority string `json:"priority"`
 			Color    string `json:"color"`
 			OrderBy  int    `json:"orderby"`
 		}{
-			ID:       1,
+			ID:       "1",
 			Priority: "high",
 			Color:    "#FF0000",
 		},

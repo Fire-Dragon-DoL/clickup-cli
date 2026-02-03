@@ -59,7 +59,7 @@ type Task struct {
 	DueDate        string `json:"due_date"`
 	StartDate      string `json:"start_date"`
 	Priority       *struct {
-		ID       int    `json:"id"`
+		ID       string `json:"id"`
 		Priority string `json:"priority"`
 		Color    string `json:"color"`
 		OrderBy  int    `json:"orderby"`

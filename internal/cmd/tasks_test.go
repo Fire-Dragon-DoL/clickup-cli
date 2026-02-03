@@ -75,12 +75,12 @@ func TestFormatTasksListView(t *testing.T) {
 				Status: "open",
 			},
 			Priority: &struct {
-				ID       int    `json:"id"`
+				ID       string `json:"id"`
 				Priority string `json:"priority"`
 				Color    string `json:"color"`
 				OrderBy  int    `json:"orderby"`
 			}{
-				ID:       1,
+				ID:       "1",
 				Priority: "high",
 			},
 		},
@@ -148,12 +148,12 @@ func TestFormatTaskDetailsView(t *testing.T) {
 			Status: "open",
 		},
 		Priority: &struct {
-			ID       int    `json:"id"`
+			ID       string `json:"id"`
 			Priority string `json:"priority"`
 			Color    string `json:"color"`
 			OrderBy  int    `json:"orderby"`
 		}{
-			ID:       1,
+			ID:       "1",
 			Priority: "high",
 		},
 		Assignee: &api.User{
