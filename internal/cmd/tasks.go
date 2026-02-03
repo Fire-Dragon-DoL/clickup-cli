@@ -2,11 +2,23 @@ package cmd
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
+	"time"
 
 	"github.com/Fire-Dragon-DoL/clickup-cli/internal/api"
 	"github.com/Fire-Dragon-DoL/clickup-cli/internal/resolver"
 	"github.com/spf13/cobra"
 )
+
+func formatTimestamp(ts string) string {
+	ms, err := strconv.ParseInt(ts, 10, 64)
+	if err != nil {
+		return ts
+	}
+	t := time.UnixMilli(ms)
+	return t.Format("2006-01-02 15:04")
+}
 
 var tasksCmd = &cobra.Command{
 	Use:   "tasks",
@@ -146,55 +158,45 @@ var tasksCreateCmd = &cobra.Command{
 }
 
 func formatTaskDetailsView(task api.Task, comments ...api.Comment) (string, error) {
-	formatter := GetFormatter()
+	var lines []string
 
-	type CommentView struct {
-		Author  string
-		Content string
-		Date    string
-	}
-
-	type TaskDetailsView struct {
-		ID          string
-		Title       string
-		Description string
-		Assignee    string
-		Status      string
-		Priority    string
-		DueDate     string
-		Comments    []CommentView
-	}
-
-	view := TaskDetailsView{
-		ID:          task.ID,
-		Title:       task.Name,
-		Description: task.Description,
-		DueDate:     task.DueDate,
-	}
+	lines = append(lines, fmt.Sprintf("ID: %s", task.ID))
+	lines = append(lines, fmt.Sprintf("Title: %s", task.Name))
 
 	if task.Assignee != nil {
-		view.Assignee = task.Assignee.Username
+		lines = append(lines, fmt.Sprintf("Assignee: %s", task.Assignee.Username))
 	}
 
 	if task.Status != nil {
-		view.Status = task.Status.Status
+		lines = append(lines, fmt.Sprintf("Status: %s", task.Status.Status))
 	}
 
 	if task.Priority != nil {
-		view.Priority = task.Priority.Priority
+		lines = append(lines, fmt.Sprintf("Priority: %s", task.Priority.Priority))
+	}
+
+	if task.DueDate != "" {
+		lines = append(lines, fmt.Sprintf("DueDate: %s", task.DueDate))
+	}
+
+	separator := strings.Repeat("-", 40)
+
+	if task.Description != "" {
+		lines = append(lines, "Description:")
+		lines = append(lines, task.Description)
+		lines = append(lines, separator)
 	}
 
 	if len(comments) > 0 {
+		lines = append(lines, "Comments:")
 		for _, comment := range comments {
-			view.Comments = append(view.Comments, CommentView{
-				Author:  comment.User.Username,
-				Content: comment.TextContent,
-				Date:    comment.DateCreated,
-			})
+			lines = append(lines, fmt.Sprintf("%s - %s", formatTimestamp(comment.DateCreated), comment.User.Username))
+			lines = append(lines, comment.TextContent)
+			lines = append(lines, separator)
 		}
 	}
 
-	return formatter.Format(view)
+	return strings.Join(lines, "\n"), nil
 }
 
 var tasksShowCmd = &cobra.Command{
