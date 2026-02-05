@@ -74,14 +74,35 @@ type Task struct {
 	Subtasks []Task `json:"subtasks"`
 }
 
+type CommentSegment struct {
+	Text       string `json:"text"`
+	Attributes struct {
+		Link string `json:"link"`
+	} `json:"attributes"`
+}
+
 type Comment struct {
-	ID           string `json:"id"`
-	HistoryID    string `json:"history_id"`
-	TextContent  string `json:"text_content"`
-	User         User   `json:"user"`
-	Resolved     bool   `json:"resolved"`
-	DateCreated  string `json:"date_created"`
-	DateUpdated  string `json:"date_updated"`
+	ID          string           `json:"id"`
+	HistoryID   string           `json:"hist_id"`
+	CommentText string           `json:"comment_text"`
+	Content     []CommentSegment `json:"comment"`
+	User        User             `json:"user"`
+	Resolved    bool             `json:"resolved"`
+	Date        string           `json:"date"`
+}
+
+func (c Comment) RenderText() string {
+	if len(c.Content) == 0 {
+		return c.CommentText
+	}
+	var result string
+	for _, seg := range c.Content {
+		result += seg.Text
+		if seg.Attributes.Link != "" {
+			result += " (" + seg.Attributes.Link + ")"
+		}
+	}
+	return result
 }
 
 type CommentsResponse struct {

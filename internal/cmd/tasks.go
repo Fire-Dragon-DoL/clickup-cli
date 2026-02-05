@@ -190,8 +190,8 @@ func formatTaskDetailsView(task api.Task, comments ...api.Comment) (string, erro
 	if len(comments) > 0 {
 		lines = append(lines, "Comments:")
 		for _, comment := range comments {
-			lines = append(lines, fmt.Sprintf("%s - %s", formatTimestamp(comment.DateCreated), comment.User.Username))
-			lines = append(lines, comment.TextContent)
+			lines = append(lines, fmt.Sprintf("%s - %s", formatTimestamp(comment.Date), comment.User.Username))
+			lines = append(lines, comment.RenderText())
 			lines = append(lines, separator)
 		}
 	}

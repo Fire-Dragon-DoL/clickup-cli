@@ -304,23 +304,23 @@ func TestGetTaskComments(t *testing.T) {
 		Comments: []Comment{
 			{
 				ID:          "comment1",
-				TextContent: "First comment",
+				CommentText: "First comment",
 				User: User{
 					ID:       "user1",
 					Username: "john",
 					Email:    "john@example.com",
 				},
-				DateCreated: "2025-01-14",
+				Date: "1736812800000",
 			},
 			{
 				ID:          "comment2",
-				TextContent: "Second comment",
+				CommentText: "Second comment",
 				User: User{
 					ID:       "user2",
 					Username: "jane",
 					Email:    "jane@example.com",
 				},
-				DateCreated: "2025-01-15",
+				Date: "1736899200000",
 			},
 		},
 	}
@@ -343,8 +343,8 @@ func TestGetTaskComments(t *testing.T) {
 	if comments[0].ID != "comment1" {
 		t.Errorf("expected first comment ID 'comment1', got '%s'", comments[0].ID)
 	}
-	if comments[0].TextContent != "First comment" {
-		t.Errorf("expected first comment text 'First comment', got '%s'", comments[0].TextContent)
+	if comments[0].CommentText != "First comment" {
+		t.Errorf("expected first comment text 'First comment', got '%s'", comments[0].CommentText)
 	}
 	if comments[1].ID != "comment2" {
 		t.Errorf("expected second comment ID 'comment2', got '%s'", comments[1].ID)

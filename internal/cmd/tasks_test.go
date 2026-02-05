@@ -166,12 +166,12 @@ func TestFormatTaskDetailsView(t *testing.T) {
 	comments := []api.Comment{
 		{
 			ID:          "comment1",
-			TextContent: "First comment",
+			CommentText: "First comment",
 			User: api.User{
 				ID:       "user1",
 				Username: "john",
 			},
-			DateCreated: "2025-01-14",
+			Date: "1736812800000",
 		},
 	}
 
