@@ -5,21 +5,22 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/Fire-Dragon-DoL/clickup-cli/internal/auth"
 	"github.com/Fire-Dragon-DoL/clickup-cli/internal/config"
-	"github.com/Fire-Dragon-DoL/clickup-cli/internal/keyring"
 	"github.com/Fire-Dragon-DoL/clickup-cli/internal/output"
 	"github.com/spf13/cobra"
 )
 
 var (
-	cfgFile      string
-	spaceID      string
-	outputFormat string
+	cfgFile       string
+	spaceID       string
+	outputFormat  string
+	authSourceFlag string
 	strictResolve bool
 
-	cfg       *config.Config
-	kr        *keyring.Keyring
-	formatter *output.Formatter
+	cfg        *config.Config
+	authSource auth.Source
+	formatter  *output.Formatter
 )
 
 var rootCmd = &cobra.Command{
@@ -40,9 +41,14 @@ Configure your ClickUp space and API key to get started.`,
 			}
 		}
 
-		cfg.ApplyCLIOverrides(spaceID, outputFormat, strictResolve)
+		cfg.ApplyCLIOverrides(spaceID, outputFormat, authSourceFlag, strictResolve)
 		formatter = output.NewFormatter(cfg.OutputFormat)
-		kr = keyring.New(keyring.NewSystemProvider())
+
+		src, err := auth.ParseSource(cfg.AuthSource)
+		if err != nil {
+			return err
+		}
+		authSource = src
 
 		return nil
 	},
@@ -56,6 +62,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file path")
 	rootCmd.PersistentFlags().StringVar(&spaceID, "space", "", "ClickUp space ID")
 	rootCmd.PersistentFlags().StringVarP(&outputFormat, "output", "o", "", "output format (text|json)")
+	rootCmd.PersistentFlags().StringVar(&authSourceFlag, "auth-source", "", "auth source URI (keyring:// or chezmoi://key.path)")
 	rootCmd.PersistentFlags().BoolVar(&strictResolve, "strict", false, "fail on ambiguous name resolution")
 }
 
@@ -71,8 +78,8 @@ func GetConfig() *config.Config {
 	return cfg
 }
 
-func GetKeyring() *keyring.Keyring {
-	return kr
+func GetAPIKey() (string, error) {
+	return authSource.GetAPIKey()
 }
 
 func GetFormatter() *output.Formatter {

@@ -21,8 +21,7 @@ var foldersListCmd = &cobra.Command{
 			return fmt.Errorf("space ID is required")
 		}
 
-		kr := GetKeyring()
-		apiKey, err := kr.GetAPIKey()
+		apiKey, err := GetAPIKey()
 		if err != nil {
 			return err
 		}

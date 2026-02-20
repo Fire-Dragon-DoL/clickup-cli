@@ -39,8 +39,7 @@ var tasksListCmd = &cobra.Command{
 			return err
 		}
 
-		kr := GetKeyring()
-		apiKey, err := kr.GetAPIKey()
+		apiKey, err := GetAPIKey()
 		if err != nil {
 			return err
 		}
@@ -84,8 +83,7 @@ var tasksCreateCmd = &cobra.Command{
 			return fmt.Errorf("--list flag is required")
 		}
 
-		kr := GetKeyring()
-		apiKey, err := kr.GetAPIKey()
+		apiKey, err := GetAPIKey()
 		if err != nil {
 			return err
 		}
@@ -206,8 +204,7 @@ var tasksShowCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		taskArg := args[0]
 
-		kr := GetKeyring()
-		apiKey, err := kr.GetAPIKey()
+		apiKey, err := GetAPIKey()
 		if err != nil {
 			return err
 		}
@@ -248,8 +245,7 @@ var tasksUpdateCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		taskArg := args[0]
 
-		kr := GetKeyring()
-		apiKey, err := kr.GetAPIKey()
+		apiKey, err := GetAPIKey()
 		if err != nil {
 			return err
 		}
@@ -361,8 +357,7 @@ var tasksDeleteCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		taskArg := args[0]
 
-		kr := GetKeyring()
-		apiKey, err := kr.GetAPIKey()
+		apiKey, err := GetAPIKey()
 		if err != nil {
 			return err
 		}
@@ -393,8 +388,7 @@ var tasksArchiveCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		taskArg := args[0]
 
-		kr := GetKeyring()
-		apiKey, err := kr.GetAPIKey()
+		apiKey, err := GetAPIKey()
 		if err != nil {
 			return err
 		}

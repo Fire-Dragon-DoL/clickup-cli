@@ -22,8 +22,7 @@ var listsListCmd = &cobra.Command{
 			return fmt.Errorf("--folder flag is required")
 		}
 
-		kr := GetKeyring()
-		apiKey, err := kr.GetAPIKey()
+		apiKey, err := GetAPIKey()
 		if err != nil {
 			return err
 		}

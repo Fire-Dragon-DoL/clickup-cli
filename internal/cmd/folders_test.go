@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/Fire-Dragon-DoL/clickup-cli/internal/config"
-	"github.com/Fire-Dragon-DoL/clickup-cli/internal/keyring"
 )
 
 func TestFoldersListCommand(t *testing.T) {
@@ -14,10 +13,7 @@ func TestFoldersListCommand(t *testing.T) {
 		StrictResolve: false,
 	}
 
-	mockProvider := &mockKeyringProvider{
-		apiKey: "test-key",
-	}
-	kr = keyring.New(mockProvider)
+	authSource = &mockAuthSource{apiKey: "test-key"}
 
 	cmd := foldersListCmd
 	if cmd == nil {
@@ -44,22 +40,14 @@ func TestFoldersCommand(t *testing.T) {
 	}
 }
 
-type mockKeyringProvider struct {
+type mockAuthSource struct {
 	apiKey string
 	err    error
 }
 
-func (m *mockKeyringProvider) Get(service, user string) (string, error) {
+func (m *mockAuthSource) GetAPIKey() (string, error) {
 	if m.err != nil {
 		return "", m.err
 	}
 	return m.apiKey, nil
-}
-
-func (m *mockKeyringProvider) Set(service, user, password string) error {
-	return nil
-}
-
-func (m *mockKeyringProvider) Delete(service, user string) error {
-	return nil
 }

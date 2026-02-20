@@ -18,6 +18,30 @@ func TestLoadConfig_DefaultValues(t *testing.T) {
 	if cfg.StrictResolve != false {
 		t.Errorf("expected strict_resolve false, got %v", cfg.StrictResolve)
 	}
+	if cfg.AuthSource != "keyring://" {
+		t.Errorf("expected auth_source 'keyring://', got %q", cfg.AuthSource)
+	}
+}
+
+func TestLoadConfig_AuthSourceEnvOverride(t *testing.T) {
+	t.Setenv("CLICKUP_AUTH_SOURCE", "chezmoi://secrets.clickup.key")
+
+	cfg := Load()
+
+	if cfg.AuthSource != "chezmoi://secrets.clickup.key" {
+		t.Errorf("expected auth_source 'chezmoi://secrets.clickup.key', got %q", cfg.AuthSource)
+	}
+}
+
+func TestLoadConfig_AuthSourceCLIOverride(t *testing.T) {
+	t.Setenv("CLICKUP_AUTH_SOURCE", "chezmoi://")
+
+	cfg := Load()
+	cfg.ApplyCLIOverrides("", "", "chezmoi://custom.key", false)
+
+	if cfg.AuthSource != "chezmoi://custom.key" {
+		t.Errorf("expected auth_source 'chezmoi://custom.key', got %q", cfg.AuthSource)
+	}
 }
 
 func TestLoadConfig_FromFile(t *testing.T) {
@@ -67,7 +91,7 @@ func TestLoadConfig_CLIOverridesEnv(t *testing.T) {
 	t.Setenv("CLICKUP_OUTPUT_FORMAT", "text")
 
 	cfg := Load()
-	cfg.ApplyCLIOverrides("cli_space", "json", true)
+	cfg.ApplyCLIOverrides("cli_space", "json", "", true)
 
 	if cfg.SpaceID != "cli_space" {
 		t.Errorf("expected SpaceID 'cli_space' from CLI, got %q", cfg.SpaceID)
@@ -91,7 +115,7 @@ func TestLoadConfig_PriorityChain(t *testing.T) {
 	t.Setenv("CLICKUP_SPACE_ID", "env_space")
 
 	cfg := LoadFromFile(configPath)
-	cfg.ApplyCLIOverrides("cli_space", "", false)
+	cfg.ApplyCLIOverrides("cli_space", "", "", false)
 
 	if cfg.SpaceID != "cli_space" {
 		t.Errorf("expected SpaceID 'cli_space' from CLI (highest priority), got %q", cfg.SpaceID)
@@ -105,7 +129,7 @@ func TestLoadConfig_PartialCLIOverrides(t *testing.T) {
 	t.Setenv("CLICKUP_SPACE_ID", "env_space")
 
 	cfg := Load()
-	cfg.ApplyCLIOverrides("", "json", false)
+	cfg.ApplyCLIOverrides("", "json", "", false)
 
 	if cfg.SpaceID != "env_space" {
 		t.Errorf("expected SpaceID 'env_space' from env (CLI not provided), got %q", cfg.SpaceID)

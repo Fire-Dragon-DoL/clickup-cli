@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/Fire-Dragon-DoL/clickup-cli/internal/config"
-	"github.com/Fire-Dragon-DoL/clickup-cli/internal/keyring"
 )
 
 func TestListsListCommand(t *testing.T) {
@@ -14,10 +13,7 @@ func TestListsListCommand(t *testing.T) {
 		StrictResolve: false,
 	}
 
-	mockProvider := &mockKeyringProvider{
-		apiKey: "test-key",
-	}
-	kr = keyring.New(mockProvider)
+	authSource = &mockAuthSource{apiKey: "test-key"}
 
 	cmd := listsListCmd
 	if cmd == nil {
